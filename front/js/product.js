@@ -6,9 +6,9 @@ function getProduct() {
 let item = document.querySelector(".item")
 let product = fetch(`http://localhost:3000/api/products/${id}`)
     .then((res) => res.json())
-    .then(function(apiResults) {
-        product = apiResults;
-        item.querySelector(".item__img").insertAdjacentHTML("afterbegin", `<img src="${product.imageUrl} "alt="${product.altTxt}"></img>`);
+    .then(function(product) {
+        item.querySelector(".item__img")
+        .insertAdjacentHTML("afterbegin", `<img src="${product.imageUrl} "alt="${product.altTxt}"></img>`);
         document.getElementById("title").innerText = product.name;
         document.getElementById("price").innerText = product.price;
         document.getElementById("description").innerText = product.description;
@@ -32,8 +32,10 @@ function addToCart(product){
     document.querySelector("#addToCart").addEventListener("click", function(){
         if(document.querySelector("#quantity").reportValidity() &&
             document.querySelector("#colors").value != "") {
-            let productQty = JSON.parse(document.querySelector("#quantity").value);
+            let productQty = document.querySelector("#quantity").value;
+            let color = document.querySelector("#colors").value;
             localStorageCheck(productQty);
+            messageBasket(product, color, productQty);
         }else {
             alert("Merci de renseigner correctement les champs Couleur et Quantité")
         }
@@ -42,15 +44,35 @@ function addToCart(product){
 
 function localStorageCheck(productQty) {
     let key = id + "_" + document.querySelector("#colors").value;
-    let productLocalStorage = JSON.parse(localStorage.getItem(`${key}`));
-    if(productLocalStorage){
-        productLocalStorage.push(productQty);
-        localStorage.setItem(`${key}`, JSON.stringify(productLocalStorage));
+    localStorage.getItem(key)
+    if(key in localStorage){
+        localStorage[key] = productQty;
+        localStorage.getItem(key);
     } else{
-        productLocalStorage = [];
-        productLocalStorage.push(productQty);
-        localStorage.setItem(`${key}`, JSON.stringify(productLocalStorage));
-        console.log(productLocalStorage)
+        localStorage = [];
+        localStorage[key] += productQty;
+        localStorage.setItem(key, productQty);
     }
     
+}
+/*cart = getCart();
+if (key in cart) {
+    cart[key] += quantity;
+} else {
+    cart[key] = quantity;
+}
+setCart(cart); */
+
+//Crée le message
+function messageBasket(product, color, productQty) {
+    let messageBasket = document.createElement("div");
+    messageBasket.style.minWidth = "200px";
+    messageBasket.style.backgroundColor = "#2c3e50";
+    messageBasket.style.position = "absolute";
+    messageBasket.style.top = "100px";
+    messageBasket.style.padding = "18px 28px"
+    messageBasket.style.borderRadius = "40px";
+    messageBasket.textContent = `Vous avez ajouté ${productQty} Kanap ${product.name} ${color} à votre panier !`;
+    document.querySelector(".item__content__addButton").style.position = "relative";
+    document.querySelector('.item__content__addButton').appendChild(messageBasket);
 }

@@ -21,15 +21,14 @@ function getLSProduct () {
         const keySplit = localStorage.key(i).split("_");
         let id = keySplit[0];
         let color = keySplit[1];
-        const array = JSON.parse(localStorage.getItem(localStorage.key(i)));
+        const array = localStorage.getItem(localStorage.key(i));
         let total = 0;
         //Additionne les quantités de chaque tableau 'produit' pour en faire une quantité totale par produit
         for (let i = 0; i < array.length; i++) {
             total += array[i];
         }
 
-        const product = JSON.parse(localStorage.getItem(key));
-        //console.log(products);
+        const product = localStorage.getItem(key);
         for (let i of product) {
             fetch(`http://localhost:3000/api/products/${id}`)
             .then(res => res.json())
