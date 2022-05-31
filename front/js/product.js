@@ -15,9 +15,9 @@ let product = fetch(`http://localhost:3000/api/products/${id}`)
         for (let i = 0; i < product.colors.length; i++) {
             document.getElementById("colors").appendChild(createNewOption(product.colors[i]))
           }
+          addToCart(product);
         });
    
-        addToCart(product);
 }
 //Crée une nouvelle option
 function createNewOption(value) {
@@ -32,29 +32,48 @@ function addToCart(product){
     document.querySelector("#addToCart").addEventListener("click", function(){
         if(document.querySelector("#quantity").reportValidity() &&
             document.querySelector("#colors").value != "") {
-            let productQty = document.querySelector("#quantity").value;
+            let quantity = document.querySelector("#quantity").value;
             let color = document.querySelector("#colors").value;
-            localStorageCheck(productQty);
-            messageBasket(product, color, productQty);
+            localStorageCheck(quantity);
+            displayMessage(product, color, quantity);
+
         }else {
             alert("Merci de renseigner correctement les champs Couleur et Quantité")
         }
     })
 }
 
-function localStorageCheck(productQty) {
+function localStorageCheck(quantity) {
     let key = id + "_" + document.querySelector("#colors").value;
     localStorage.getItem(key)
     if(key in localStorage){
-        localStorage[key] = productQty;
+        localStorage[key] = quantity;
         localStorage.getItem(key);
     } else{
         localStorage = [];
-        localStorage[key] += productQty;
-        localStorage.setItem(key, productQty);
+        localStorage[key] += quantity;
+        localStorage.setItem(key, quantity);
     }
     
 }
+//Crée le message pour informer l'utilisateur de l'ajout de son produit au panier
+function displayMessage(product, color, quantity) {
+    let message = document.createElement("div");
+    message.style.minWidth = "200px";
+    message.style.backgroundColor = "#2c3e50";
+    message.style.position = "absolute";
+    message.style.top = "100px";
+    message.style.padding = "18px 28px";
+    message.style.borderRadius = "40px";
+    message.textContent = `Vous avez ajouté ${quantity} ${product.name} ${color} à votre panier !`;
+    document.querySelector(".item__content__addButton").style.position = "relative";
+    document.querySelector(".item__content__addButton").appendChild(message);
+    //Fais disparaitre le message après 2 secondes
+    setTimeout(function() {
+        message.style.display = "none";
+    }, 2000)
+}
+
 /*cart = getCart();
 if (key in cart) {
     cart[key] += quantity;
@@ -62,17 +81,3 @@ if (key in cart) {
     cart[key] = quantity;
 }
 setCart(cart); */
-
-//Crée le message
-function messageBasket(product, color, productQty) {
-    let messageBasket = document.createElement("div");
-    messageBasket.style.minWidth = "200px";
-    messageBasket.style.backgroundColor = "#2c3e50";
-    messageBasket.style.position = "absolute";
-    messageBasket.style.top = "100px";
-    messageBasket.style.padding = "18px 28px"
-    messageBasket.style.borderRadius = "40px";
-    messageBasket.textContent = `Vous avez ajouté ${productQty} Kanap ${product.name} ${color} à votre panier !`;
-    document.querySelector(".item__content__addButton").style.position = "relative";
-    document.querySelector('.item__content__addButton').appendChild(messageBasket);
-}
