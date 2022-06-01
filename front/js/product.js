@@ -15,7 +15,7 @@ let product = fetch(`http://localhost:3000/api/products/${id}`)
         for (let i = 0; i < product.colors.length; i++) {
             document.getElementById("colors").appendChild(createNewOption(product.colors[i]))
           }
-          addToCart(product);
+          addProduct(product);
         });
    
 }
@@ -28,34 +28,21 @@ function createNewOption(value) {
 
 }
 
-function addToCart(product){
+function addProduct(product){
     document.querySelector("#addToCart").addEventListener("click", function(){
         if(document.querySelector("#quantity").reportValidity() &&
             document.querySelector("#colors").value != "") {
             let quantity = document.querySelector("#quantity").value;
             let color = document.querySelector("#colors").value;
-            localStorageCheck(quantity);
+            let item = id + "_" + document.querySelector("#colors").value;
             displayMessage(product, color, quantity);
-
+            addCart();
         }else {
             alert("Merci de renseigner correctement les champs Couleur et Quantité")
         }
     })
 }
 
-function localStorageCheck(quantity) {
-    let key = id + "_" + document.querySelector("#colors").value;
-    localStorage.getItem(key)
-    if(key in localStorage){
-        localStorage[key] = quantity;
-        localStorage.getItem(key);
-    } else{
-        localStorage = [];
-        localStorage[key] += quantity;
-        localStorage.setItem(key, quantity);
-    }
-    
-}
 //Crée le message pour informer l'utilisateur de l'ajout de son produit au panier
 function displayMessage(product, color, quantity) {
     let message = document.createElement("div");
@@ -74,10 +61,41 @@ function displayMessage(product, color, quantity) {
     }, 2000)
 }
 
-/*cart = getCart();
-if (key in cart) {
-    cart[key] += quantity;
-} else {
-    cart[key] = quantity;
+function addCart(item, quantity) {
+    cart = getCart();
+    if( item in cart) {
+        cart[item] += quantity;
+    } else {
+        cart[item] = quantity;
+    }
+    saveCart(cart)
 }
-setCart(cart); */
+
+function getCart() {
+    let cart = localStorage.getItem("cart");
+    item = id + "_" + document.querySelector("#colors").value;
+    quantity = document.querySelector("#quantity").value;
+    if (cart == null) {
+        return [];
+    } else {
+        return JSON.parse(cart);
+    }
+}
+
+function saveCart(cart) {
+    item = id + "_" + document.querySelector("#colors").value;
+    quantity = document.querySelector("#quantity").value;
+    cart = {item, quantity};
+    localStorage.setItem("cart", JSON.stringify(cart))
+}
+
+
+
+/*function cartSettings(quantity) {
+    let cart = getCart();
+    if(key in cart) {
+        cart[key] += quantity;
+    } else {
+        cart[key] = quantity;
+    }
+}*/
