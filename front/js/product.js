@@ -46,9 +46,9 @@ function addProduct(product){
             let color = document.querySelector("#colors").value;
             let item = id + "_" + document.querySelector("#colors").value
             displayMessage(product, color, quantity);
-            addCart(item, quantity)
+            addCart(item, quantity);
         }else {
-            alert("Merci de renseigner le nombre d'articles et la couleur")
+            alert("Merci de renseigner le nombre d'articles et la couleur");
         }
     })
 }
@@ -92,11 +92,9 @@ function addCart(item, quantity) {
     console.log(cart);
     if (item in cart) {
         cart[item] += quantity;
-        console.log("déja dans le panier");
     } else {
         //cart.push(item, quantity);
         cart[item] = quantity;
-        console.log("pas dans le panier");
     }
     console.log(cart);
     saveCart(cart);
