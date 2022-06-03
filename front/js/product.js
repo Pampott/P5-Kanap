@@ -1,24 +1,32 @@
 let id = (new URL(document.location).searchParams.get("id"));
+//localStorage.setItem("cart", "");
 
-getProduct()
 
+getProduct();
+
+//Fonction qui récupère uniquement le produit à l'id correspondant
 function getProduct() {
 let item = document.querySelector(".item")
 let product = fetch(`http://localhost:3000/api/products/${id}`)
     .then((res) => res.json())
     .then(function(product) {
+        //Insère l'image récupérée via fetch
         item.querySelector(".item__img")
         .insertAdjacentHTML("afterbegin", `<img src="${product.imageUrl} "alt="${product.altTxt}"></img>`);
+        //Insère le nom du produit
         document.getElementById("title").innerText = product.name;
+        //Insère le prix du produit
         document.getElementById("price").innerText = product.price;
+        //Insère la description du produit
         document.getElementById("description").innerText = product.description;
+        //Pour chaque couleur du produit, insère une nouvelle option
         for (let i = 0; i < product.colors.length; i++) {
-            document.getElementById("colors").appendChild(createNewOption(product.colors[i]))
-          }
-          addProduct(product);
-        });
-   
+            document.getElementById("colors").appendChild(createNewOption(product.colors[i]));
+        }
+        addProduct(product);
+    });  
 }
+
 //Crée une nouvelle option
 function createNewOption(value) {
     let newOption = document.createElement("option", value);
@@ -28,17 +36,19 @@ function createNewOption(value) {
 
 }
 
+//Ajoute le produit au panier si les conditions sont remplies
 function addProduct(product){
+    ;
     document.querySelector("#addToCart").addEventListener("click", function(){
         if(document.querySelector("#quantity").reportValidity() &&
             document.querySelector("#colors").value != "") {
-            let quantity = document.querySelector("#quantity").value;
+            let quantity = parseInt(document.querySelector("#quantity").value);
             let color = document.querySelector("#colors").value;
-            let item = id + "_" + document.querySelector("#colors").value;
+            let item = id + "_" + document.querySelector("#colors").value
             displayMessage(product, color, quantity);
-            addCart();
+            addCart(item, quantity)
         }else {
-            alert("Merci de renseigner correctement les champs Couleur et Quantité")
+            alert("Merci de renseigner le nombre d'articles et la couleur")
         }
     })
 }
@@ -58,36 +68,43 @@ function displayMessage(product, color, quantity) {
     //Fais disparaitre le message après 2 secondes
     setTimeout(function() {
         message.style.display = "none";
-    }, 2000)
+    }, 2000);
 }
 
-function addCart(item, quantity) {
-    cart = getCart();
-    if( item in cart) {
-        cart[item] += quantity;
-    } else {
-        cart[item] = quantity;
-    }
-    saveCart(cart)
+//Crée u
+function saveCart(cart) {
+    
+    console.log(JSON.stringify(cart));
+    localStorage.setItem("cart", JSON.stringify(cart));
 }
 
 function getCart() {
     let cart = localStorage.getItem("cart");
-    item = id + "_" + document.querySelector("#colors").value;
-    quantity = document.querySelector("#quantity").value;
-    if (cart == null) {
-        return [];
+    if (cart === null) {
+        return {};
     } else {
         return JSON.parse(cart);
     }
 }
 
-function saveCart(cart) {
-    item = id + "_" + document.querySelector("#colors").value;
-    quantity = document.querySelector("#quantity").value;
-    cart = {item, quantity};
-    localStorage.setItem("cart", JSON.stringify(cart))
+function addCart(item, quantity) {
+    cart = getCart();
+    console.log(cart);
+    if (item in cart) {
+        cart[item] += quantity;
+        console.log("déja dans le panier");
+    } else {
+        //cart.push(item, quantity);
+        cart[item] = quantity;
+        console.log("pas dans le panier");
+    }
+    console.log(cart);
+    saveCart(cart);
 }
+
+
+
+
 
 
 
