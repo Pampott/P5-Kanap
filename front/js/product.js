@@ -44,7 +44,7 @@ function addProduct(product){
             document.querySelector("#colors").value != "") {
             let quantity = parseInt(document.querySelector("#quantity").value);
             let color = document.querySelector("#colors").value;
-            let item = id + "_" + document.querySelector("#colors").value
+            let item = id + "_" + document.querySelector("#colors").value;
             displayMessage(product, color, quantity);
             addCart(item, quantity);
         }else {
@@ -71,10 +71,8 @@ function displayMessage(product, color, quantity) {
     }, 2000);
 }
 
-//Crée u
+
 function saveCart(cart) {
-    
-    console.log(JSON.stringify(cart));
     localStorage.setItem("cart", JSON.stringify(cart));
 }
 
@@ -89,14 +87,12 @@ function getCart() {
 
 function addCart(item, quantity) {
     cart = getCart();
-    console.log(cart);
     if (item in cart) {
         cart[item] += quantity;
     } else {
         //cart.push(item, quantity);
         cart[item] = quantity;
     }
-    console.log(cart);
     saveCart(cart);
 }
 
