@@ -1,41 +1,27 @@
-displayCart();
+getCart();
 
-function displayCart(){
-    const cart = JSON.parse(localStorage.getItem("cart"));
-    const items = ;
-    console.log(items);
-    for(let item of items){
-        /*let splittedItem = item.split("_");
-        let id = splittedItem[0];
-        let color = splittedItem[1];
-        let quantity = values
-        console.log(quantity);*/
-         item = fetch(`http://localhost:3000/api/products/${id}`)
-        .then((res) => res.json())
-        .then(function(product) {
-            document.getElementById("cart__items")
-                .innerHTML +=
-                `<article class="cart__item" data-id="${product.id}" data-color="${product.color}">
-                    <div class="cart__item__img">
-                        <img src="${product.imageUrl}" alt="${product.altTxt}">
-                    </div>
-                    <div class="cart__item__content">
-                        <div class="cart__item__content__description">
-                            <h2>${product.name}</h2>
-                            <p>${color}</p>
-                            <p>${product.price} €</p>
-                        </div>
-                        <div class="cart__item__content__settings">
-                            <div class="cart__item__content__settings__quantity">
-                                <p>Qté : </p>
-                                <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="">
-                            </div>
-                            <div class="cart__item__content__settings__delete">
-                                <p class="deleteItem">Supprimer</p>
-                             </div>
-                        </div>
-                    </div>
-                </article>`
-        })
+function getCart(){
+cart = JSON.parse(localStorage.getItem("cart"));
+splitCart();
+}
+
+//Récupère les entrées du LS, puis sépare les données pour pouvoir récupérer l'id, la couleur, et la quantité
+function splitCart(id, color, quantity){
+    //Items correspond à un tableau regroupant chaque produit et sa quantité sous forme de tableau
+    let items = Object.entries(cart);
+    //Pour chaque tableau "item" dans "items",
+    for (let item in items) {
+        //Déclare le tableau
+        let products = items[item];
+        //Récupère la quantité correspondante
+        quantity = products[1];
+        //Récupère l'entrée qui comporte id+color
+        let product = products[0];
+        //Séparation de l'entrée afin de récupérer id et color
+        id = product.split("_")[0];
+        color = product.split("_")[1];
+        
     }
 }
+
+
