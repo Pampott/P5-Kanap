@@ -1,70 +1,64 @@
-const init = async function() {
-    const productCart = await getProductLS();
-    //deleteItem(productCart);
-    checkProductLS();
+
+
+function getCart() {
+    return JSON.parse(localStorage.getItem("cart"));
 };
 
-init();
-
-function getProductLS() {
-    const cart = JSON.parse(localStorage.getItem("cart"));
-    productCart = Object.entries(cart);
-    return productCart;
+function setCart(cart){
+    localStorage.setItem("cart", JSON.stringify(cart))
 };
 
-function saveCart(product){
-    return localStorage.setItem("cart", JSON.stringify(product))
-};
-
-const cartItem = document.querySelector("#cart__items");
-
-async function checkProductLS() {
-    const productCart = await getProductLS();
-    if(productCart.length === 0) {
+function checkCart() {
+    const cart = getCart();
+    if(cart.length === 0) {
         cartItem.textContent = "Le panier est vide";
     }
     else {
-        productCart.forEach(item => {
-            let product = item[0];
-            let id = product.split("_")[0];
-            let color = product.split("_")[1];
-            let quantity = item[1];
-            displayProduct(id, color, quantity);
-        });
-    };
+        displayProduct();
+    }
 };
 
-function displayProduct(id, color, quantity) {
-    fetch(`http://localhost:3000/api/products/${id}`)
-    .then((res) => res.json())
-    .then(function(product) {
-        document.getElementById("cart__items")
-        .innerHTML +=
-        `<article class="cart__item" data-id="${id}" data-color="${color}">
-            <div class="cart__item__img">
-                <img src="${product.imageUrl}" alt="${product.altTxt}">
-            </div>
-            <div class="cart__item__content">
-                <div class="cart__item__content__description">
-                    <h2>${product.name}</h2>
-                    <p>${color}</p>
-                    <p>${product.price} €</p>
+async function displayProduct(id, color, quantity) {
+    cart = getCart();
+    for(product in cart){
+        id = product.split("_")[0];
+        color = product.split("_")[1];
+        quantity = cart[product];
+
+        await fetch(`http://localhost:3000/api/products/${id}`)
+        .then((res) => res.json())
+        .then(function(product) {
+            document.getElementById("cart__items")
+            .innerHTML +=
+            `<article class="cart__item" data-id="${id}" data-color="${color}">
+                <div class="cart__item__img">
+                    <img src="${product.imageUrl}" alt="${product.altTxt}">
                 </div>
-                <div class="cart__item__content__settings">
-                    <div class="cart__item__content__settings__quantity">
-                        <p>Qté :</p>
-                        <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${quantity}">
+                <div class="cart__item__content">
+                    <div class="cart__item__content__description">
+                        <h2>${product.name}</h2>
+                        <p>${color}</p>
+                        <p>${product.price} €</p>
                     </div>
-                    <div class="cart__item__content__settings__delete">
-                        <p class="deleteItem">Supprimer</p>
+                    <div class="cart__item__content__settings">
+                        <div class="cart__item__content__settings__quantity">
+                            <p>Qté :</p>
+                            <input type="number" class="itemQuantity" name="itemQuantity" min="1" max="100" value="${quantity}">
                         </div>
+                        <div class="cart__item__content__settings__delete">
+                            <p class="deleteItem">Supprimer</p>
+                            </div>
+                    </div>
                 </div>
-            </div>
-        </article>`;
-        totalPrice();
-        totalItems();
-        changeQty();
-    })
+            </article>`;
+            totalPrice();
+            totalItems();
+            
+        })
+        
+    }
+    changeQty(quantity);
+    deleteItem(cart);
 }
 
 function totalPrice() {
@@ -80,7 +74,7 @@ function totalPrice() {
 }
 
 function totalItems (){
-    cart = JSON.parse(localStorage.getItem("cart"));
+    cart = getCart();
     let aQuantity = Object.values(cart);
     let countItems = 0;
     for( let quantity in aQuantity) {
@@ -90,24 +84,52 @@ function totalItems (){
 
 }
 
-async function changeQty() {
-    let kanap = await getProductLS();
+function changeQty(quantity) {
+    let product = getCart();
+    productId = Object.keys(product)
     let inputQty = document.querySelectorAll(".itemQuantity");
-    inputQty.forEach((item)=> {
-        item.addEventListener("change", (element) => {
-            const id = element.target.closest(".cart__item").dataset.id;
-            const color = element.target.closest(".cart__item").dataset.color;
-            let kanapFind = kanap.find((item) => { 
-                let product = item[0];
-                let idLs= product.split("_")[0];
-                let colorLs = product.split("_")[1];
-                return idLs === id && colorLs === color;
-              });
-            item.value = element.target.value;
-            
+    inputQty.forEach(input => {
+        input.addEventListener("change", ()=> {
+            const id = input.closest(".cart__item").dataset.id;
+            const color = input.closest(".cart__item").dataset.color;
+            const itemInLs = id + "_" + color;
+            quantity = input.value;
+            for(item in cart){
+                if(item === itemInLs) {
+                    cart[item] = parseInt(quantity);
+                    localStorage.setItem("cart", JSON.stringify(cart));
+                }
+            }
             totalItems();
             totalPrice();
+            document.location.reload();
+        }) 
+    })
+} 
+
+function deleteItem(cart) {
+    cart = getCart();
+    const deleteBtn = document.querySelectorAll(".deleteItem");
+    deleteBtn.forEach((btn) => {
+        btn.addEventListener("click", ()=> {
+            id = btn.closest(".cart__item").dataset.id;
+            color = btn.closest(".cart__item").dataset.color;
+            itemInLs = id + "_" + color;
+            for(item in cart) {
+                if (item === itemInLs) {
+                    btn.closest(".cart__item").remove();
+                    localStorage.removeItem("cart[item]")
+                }
+            }
             
         })
     })
 }
+
+const cartItem = document.querySelector("#cart__items");
+function init() {
+getCart();
+checkCart();
+};
+
+init();

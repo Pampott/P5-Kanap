@@ -38,7 +38,7 @@ function createNewOption(value) {
 
 //Ajoute le produit au panier si les conditions sont remplies
 function addProduct(product){
-    ;
+
     document.querySelector("#addToCart").addEventListener("click", function(){
         if(document.querySelector("#quantity").reportValidity() &&
             document.querySelector("#colors").value != "") {
