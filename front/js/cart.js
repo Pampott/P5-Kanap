@@ -115,13 +115,17 @@ function deleteItem(cart) {
             id = btn.closest(".cart__item").dataset.id;
             color = btn.closest(".cart__item").dataset.color;
             itemInLs = id + "_" + color;
+            
             for(item in cart) {
-                if (item === itemInLs) {
+                if(item === itemInLs) {
+                    delete cart[item];
                     btn.closest(".cart__item").remove();
-                    localStorage.removeItem("cart[item]")
+                    localStorage.setItem("cart", JSON.stringify(cart))
                 }
             }
-            
+            totalItems();
+            totalPrice();
+            document.location.reload();
         })
     })
 }
