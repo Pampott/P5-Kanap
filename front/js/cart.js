@@ -1,13 +1,10 @@
-
-
+//Partie Panier
+//Fonction qui récupère le panier depuis le LS
 function getCart() {
     return JSON.parse(localStorage.getItem("cart"));
 };
 
-function setCart(cart){
-    localStorage.setItem("cart", JSON.stringify(cart))
-};
-
+//Si le LS n'est pas vide, affiche les produits stockés dans le LS
 function checkCart() {
     const cart = getCart();
     if(cart.length === 0) {
@@ -18,6 +15,7 @@ function checkCart() {
     }
 };
 
+//Affiche chaque produit du LS
 async function displayProduct(id, color, quantity) {
     cart = getCart();
     for(product in cart){
@@ -61,6 +59,7 @@ async function displayProduct(id, color, quantity) {
     deleteItem(cart);
 }
 
+//Calcule le prix total du panier
 function totalPrice() {
     let quantities = document.querySelectorAll(".itemQuantity");
     let prices = document.querySelectorAll(".cart__item__content__description");
@@ -73,6 +72,7 @@ function totalPrice() {
 
 }
 
+//Calcule le nombre total d'articles présents dans le panier
 function totalItems (){
     cart = getCart();
     let aQuantity = Object.values(cart);
@@ -84,6 +84,7 @@ function totalItems (){
 
 }
 
+//Change la quantité d'un produit
 function changeQty(quantity) {
     let product = getCart();
     productId = Object.keys(product)
@@ -107,6 +108,7 @@ function changeQty(quantity) {
     })
 } 
 
+//Supprime un produit du panier
 function deleteItem(cart) {
     cart = getCart();
     const deleteBtn = document.querySelectorAll(".deleteItem");
@@ -130,10 +132,19 @@ function deleteItem(cart) {
     })
 }
 
+//Partie formulaire
+function textValid() {
+    let regExpName = new RegExp("^[^0-9\.\,\"\?\!\;\:\#\$\%\&\(\)\*\+\/\<\>\=\@\[\]\\\^\_\{\}\|\~]{2,}$");
+    const firstName = document.getElementById("firstName");
+    regExpName.test()
+}
+
+textValid();
 const cartItem = document.querySelector("#cart__items");
 function init() {
 getCart();
 checkCart();
+//checkForm();
 };
 
 init();
