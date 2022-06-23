@@ -249,21 +249,22 @@ function createArrayProducts(){
     let products = [];
     for(product in cart) {
         let id = product.split("_")[0];
-        products.push(id);
+        products.push(id.toString());
     }
     return products;
 }
 
-createArrayProducts();
 submitOrder.addEventListener("click", (event)=> {
     formTest();
-    event.preventDefault();
+    formCheck();
     if(formCheck()) {
         let contact = createContact();
         let products = createArrayProducts();
         if(products !== 0) {
             let order = {contact, products};
-            fetch("http://localhost:3000/api/products/order", {
+            console.log(order);
+            let url = "http://localhost:3000/api/products" + "/order";
+            fetch(url, {
                 method: "POST",
                 headers: {
                   Accept: "application/json",
@@ -273,9 +274,10 @@ submitOrder.addEventListener("click", (event)=> {
             })
             .then((res) => res.json())
             .then((data) => {
-                let cart = getCart();
+                /*let cart = getCart();
                 cart = [];
-                localStorage.setItem("cart", JSON.stringify(cart));
+                localStorage.setItem("cart", JSON.stringify(cart));*/
+                console.log(data);
                 window.location = `./confirmation.html?orderId=${data.orderId}`;
             })
             .catch((err) => {
@@ -283,12 +285,12 @@ submitOrder.addEventListener("click", (event)=> {
             })
         }
     }
+    event.preventDefault();
 })
 const cartItem = document.querySelector("#cart__items");
 function init() {
 getCart();
 checkCart();
-formCheck();
 };
 
 init();
