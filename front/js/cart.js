@@ -133,18 +133,162 @@ function deleteItem(cart) {
 }
 
 //Partie formulaire
-function textValid() {
-    let regExpName = new RegExp("^[^0-9\.\,\"\?\!\;\:\#\$\%\&\(\)\*\+\/\<\>\=\@\[\]\\\^\_\{\}\|\~]{2,}$");
-    const firstName = document.getElementById("firstName");
-    regExpName.test()
+const regexName = /^[^0-9\.\,\"\?\!\;\:\#\$\%\&\(\)\*\+\/\<\>\=\@\[\]\\\^\_\{\}\|\~]{2,}$/;
+const regexAddress = /[^\.\"\?\!\;\:\#\$\%\&\(\)\*\+\/\<\>\=\@\[\]\\\^\_\{\}\|\~]+$/gm;
+const regexMail = /^((?!\.)[\w_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
+const submitOrder = document.getElementById("order");
+let prenom = document.getElementById("firstName");
+let nom = document.getElementById("lastName");
+let ville = document.getElementById("city");
+let adresse = document.getElementById("address");
+let mail = document.getElementById("email");
+
+function firstNameCheck(){
+    const pErrorMessage = document.getElementById("firstNameErrorMsg");
+    prenom.addEventListener("change", ()=> {
+        if(regexName.test(prenom.value) === false) {
+            pErrorMessage.innerText = "Veuillez entrer un prénom sans caractères spéciaux";
+            prenom.style.backgroundColor = "#ed300e";
+        } else {
+            prenom.style.backgroundColor = "#42f560";
+            pErrorMessage.style.display = "none";
+            
+        }
+    })
 }
 
-textValid();
+function lastNameCheck(){
+    const nErrorMessage = document.getElementById("lastNameErrorMsg");
+    nom.addEventListener("change", ()=> {
+        if(regexName.test(nom.value) === false) {
+            nErrorMessage.innerText = "Veuillez entrer un nom sans caractères spéciaux";
+            nom.style.backgroundColor = "#ed300e";
+        } else {
+            nom.style.backgroundColor = "#42f560";
+            nErrorMessage.style.display = "none";
+        }
+    })
+}
+
+function cityCheck() {
+    const vErrorMessage = document.getElementById("cityErrorMsg");
+    ville.addEventListener("change", ()=>{
+        if(regexName.test(ville.value) === false) {
+            vErrorMessage.innerText = "Veuillez entrer un nom de ville valide";
+            ville.style.backgroundColor = "#ed300e";
+        } else {
+            ville.style.backgroundColor = "#42f560";
+            vErrorMessage.style.display = "none";
+        }
+    })
+}
+
+function addressCheck() {
+    const aErrorMessage = document.getElementById("addressErrorMsg");
+    adresse.addEventListener("change", ()=>{
+        if(regexAddress.test(adresse.value) === false) {
+            aErrorMessage.innerText = "Veuillez renseigner une adresse valide";
+            adresse.style.backgroundColor = "#ed300e";
+        } else {
+            adresse.style.backgroundColor = "#42f560";
+            aErrorMessage.style.display = "none";
+        }
+    })
+}
+
+function mailCheck() {
+    const mErrorMessage = document.getElementById("emailErrorMsg");
+    mail.addEventListener("change", ()=>{
+        if(regexMail.test(mail.value) === false) {
+            mErrorMessage.innerText = "Veuillez renseigner une adresse e-mail valide";
+            mail.style.backgroundColor = "#ed300e";
+        } else {
+            mail.style.backgroundColor = "#42f560";
+            mErrorMessage.style.display = "none";
+        }
+    })
+}
+
+function formTest(){
+    firstNameCheck();
+    lastNameCheck();
+    cityCheck();
+    addressCheck();
+    mailCheck();
+}
+
+
+
+function formCheck() {
+    if(regexName.test(prenom.value) === true &&
+    regexName.test(nom.value) === true &&
+    regexName.test(ville.value) === true &&
+    regexAddress.test(adresse.value) === true &&
+    regexMail.test(mail.value) === true) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+//Crée l'objet contact qui va nous servir pour la com avec le back
+function createContact() {
+    const contact = {
+            firstName: prenom.value,
+            LastName: nom.value,
+            adress: adresse.value,
+            city: ville.value,
+            email: mail.value
+        }
+    return contact;
+}
+
+//Crée le tableau contenant les produits
+function createArrayProducts(){
+    let cart = getCart();
+    let products = [];
+    for(product in cart) {
+        let id = product.split("_")[0];
+        products.push(id);
+    }
+    return products;
+}
+
+createArrayProducts();
+submitOrder.addEventListener("click", (event)=> {
+    formTest();
+    event.preventDefault();
+    if(formCheck()) {
+        let contact = createContact();
+        let products = createArrayProducts();
+        if(products !== 0) {
+            let order = {contact, products};
+            fetch("http://localhost:3000/api/products/order", {
+                method: "POST",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(order),
+            })
+            .then((res) => res.json())
+            .then((data) => {
+                let cart = getCart();
+                cart = [];
+                localStorage.setItem("cart", JSON.stringify(cart));
+                window.location = `./confirmation.html?orderId=${data.orderId}`;
+            })
+            .catch((err) => {
+                console.log("Problème rencontré avec fetch" + err);
+            })
+        }
+    }
+})
 const cartItem = document.querySelector("#cart__items");
 function init() {
 getCart();
 checkCart();
-//checkForm();
+formCheck();
 };
 
 init();
