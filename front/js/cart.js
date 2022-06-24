@@ -133,9 +133,8 @@ function deleteItem(cart) {
 }
 
 //Partie formulaire
-const regexName = /^[^0-9\.\,\"\?\!\;\:\#\$\%\&\(\)\*\+\/\<\>\=\@\[\]\\\^\_\{\}\|\~]{2,}$/;
-const regexAddress = /[^\.\"\?\!\;\:\#\$\%\&\(\)\*\+\/\<\>\=\@\[\]\\\^\_\{\}\|\~]+$/gm;
-const regexMail = /^((?!\.)[\w_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm;
+
+//Récupération des éléments du formulaire
 const submitOrder = document.getElementById("order");
 let prenom = document.getElementById("firstName");
 let nom = document.getElementById("lastName");
@@ -143,7 +142,10 @@ let ville = document.getElementById("city");
 let adresse = document.getElementById("address");
 let mail = document.getElementById("email");
 
+
+//Vérification du prénom
 function firstNameCheck(){
+    const regexName = /^.{2,}$/;
     const pErrorMessage = document.getElementById("firstNameErrorMsg");
     prenom.addEventListener("change", ()=> {
         if(regexName.test(prenom.value) === false) {
@@ -157,7 +159,9 @@ function firstNameCheck(){
     })
 }
 
+//Vérification du nom
 function lastNameCheck(){
+    const regexName = /^.{2,}$/;
     const nErrorMessage = document.getElementById("lastNameErrorMsg");
     nom.addEventListener("change", ()=> {
         if(regexName.test(nom.value) === false) {
@@ -170,7 +174,9 @@ function lastNameCheck(){
     })
 }
 
+//Vérification de la ville
 function cityCheck() {
+    const regexName = /^.{2,}$/;
     const vErrorMessage = document.getElementById("cityErrorMsg");
     ville.addEventListener("change", ()=>{
         if(regexName.test(ville.value) === false) {
@@ -183,7 +189,9 @@ function cityCheck() {
     })
 }
 
+//Vérification de l'adresse postale
 function addressCheck() {
+    const regexAddress = /[^\.\"\?\!\;\:\#\$\%\&\(\)\*\+\/\<\>\=\@\[\]\\\^\_\{\}\|\~]+$/;
     const aErrorMessage = document.getElementById("addressErrorMsg");
     adresse.addEventListener("change", ()=>{
         if(regexAddress.test(adresse.value) === false) {
@@ -196,7 +204,9 @@ function addressCheck() {
     })
 }
 
+//Vérification de l'adresse mail
 function mailCheck() {
+    const regexMail = /^((?!\.)[\w_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/;
     const mErrorMessage = document.getElementById("emailErrorMsg");
     mail.addEventListener("change", ()=>{
         if(regexMail.test(mail.value) === false) {
@@ -209,6 +219,7 @@ function mailCheck() {
     })
 }
 
+//Fonction qui regroupe toutes les fonctions de vérification
 function formTest(){
     firstNameCheck();
     lastNameCheck();
@@ -218,7 +229,7 @@ function formTest(){
 }
 
 
-
+//Vérification globale de tous les champs en même temps
 function formCheck() {
     if(regexName.test(prenom.value) === true &&
     regexName.test(nom.value) === true &&
@@ -226,8 +237,6 @@ function formCheck() {
     regexAddress.test(adresse.value) === true &&
     regexMail.test(mail.value) === true) {
         return true;
-    } else {
-        return false;
     }
 }
 
@@ -235,8 +244,8 @@ function formCheck() {
 function createContact() {
     const contact = {
             firstName: prenom.value,
-            LastName: nom.value,
-            adress: adresse.value,
+            lastName: nom.value,
+            address: adresse.value,
             city: ville.value,
             email: mail.value
         }
@@ -249,48 +258,43 @@ function createArrayProducts(){
     let products = [];
     for(product in cart) {
         let id = product.split("_")[0];
-        products.push(id.toString());
+        products.push(id);
     }
     return products;
 }
 
-submitOrder.addEventListener("click", (event)=> {
-    formTest();
-    formCheck();
-    if(formCheck()) {
+function orderConfirm() {
+    let form = document.querySelector(".cart__order__form");
+    form.addEventListener("submit", (e)=> {
+        e.preventDefault();
         let contact = createContact();
         let products = createArrayProducts();
-        if(products !== 0) {
-            let order = {contact, products};
-            console.log(order);
-            let url = "http://localhost:3000/api/products" + "/order";
-            fetch(url, {
-                method: "POST",
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(order),
-            })
-            .then((res) => res.json())
-            .then((data) => {
-                /*let cart = getCart();
-                cart = [];
-                localStorage.setItem("cart", JSON.stringify(cart));*/
-                console.log(data);
-                window.location = `./confirmation.html?orderId=${data.orderId}`;
-            })
-            .catch((err) => {
-                console.log("Problème rencontré avec fetch" + err);
-            })
-        }
-    }
-    event.preventDefault();
-})
+        let order = {contact: contact, products: products};
+        fetch("http://localhost:3000/api/products/order", {
+            method: "POST",
+            body: JSON.stringify(order),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            window.location = `./confirmation.html?orderId=${data.orderId}`;
+        })
+        .catch((err) => {
+            console.log("Problème rencontré avec fetch: " + err);
+        })
+        
+    })
+        
+}
+
 const cartItem = document.querySelector("#cart__items");
 function init() {
 getCart();
 checkCart();
+orderConfirm();
+formTest();
 };
 
 init();
