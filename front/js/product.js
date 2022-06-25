@@ -1,6 +1,4 @@
 let id = (new URL(document.location).searchParams.get("id"));
-//localStorage.setItem("cart", "");
-
 
 getProduct();
 
@@ -38,7 +36,6 @@ function createNewOption(value) {
 
 //Ajoute le produit au panier si les conditions sont remplies
 function addProduct(product){
-
     document.querySelector("#addToCart").addEventListener("click", function(){
         if(document.querySelector("#quantity").reportValidity() &&
             document.querySelector("#colors").value != "") {
@@ -65,7 +62,7 @@ function displayMessage(product, color, quantity) {
     message.textContent = `Vous avez ajouté ${quantity} ${product.name} ${color} à votre panier !`;
     document.querySelector(".item__content__addButton").style.position = "relative";
     document.querySelector(".item__content__addButton").appendChild(message);
-    //Fais disparaitre le message après 2 secondes
+    //Fait disparaitre le message après 2 secondes
     setTimeout(function() {
         message.style.display = "none";
     }, 2000);
@@ -95,18 +92,3 @@ function addCart(item, quantity) {
     }
     saveCart(cart);
 }
-
-
-
-
-
-
-
-/*function cartSettings(quantity) {
-    let cart = getCart();
-    if(key in cart) {
-        cart[key] += quantity;
-    } else {
-        cart[key] = quantity;
-    }
-}*/
