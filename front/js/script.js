@@ -14,3 +14,4 @@ fetch("http://localhost:3000/api/products")
         </a>`
     };
 })
+.catch(error => console.log("Erreur de connexion serveur: " + error));

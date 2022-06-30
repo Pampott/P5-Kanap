@@ -53,6 +53,7 @@ async function displayProduct(id, color, quantity) {
             totalItems();
             
         })
+        .catch(error => console.log("Erreur de connexion serveur: " + error));
         
     }
     changeQty(quantity);

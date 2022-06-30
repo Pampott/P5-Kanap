@@ -22,7 +22,8 @@ let product = fetch(`http://localhost:3000/api/products/${id}`)
             document.getElementById("colors").appendChild(createNewOption(product.colors[i]));
         }
         addProduct(product);
-    });  
+    })
+    .catch(error => console.log("Erreur de connexion serveur: " + error));  
 }
 
 //Crée une nouvelle option
