@@ -146,7 +146,7 @@ let mail = document.getElementById("email");
 
 //Vérification du prénom
 function firstNameCheck(){
-    const regexName = /^.{2,}$/;
+    const regexName = /^[A-ZÇÉÈÊËÀÂÎÏÔÙÛ]{1}[a-zçéèêëàâîïôùû]+[-]?[a-zçéèêëàâîïôùû]/;
     const pErrorMessage = document.getElementById("firstNameErrorMsg");
     prenom.addEventListener("change", ()=> {
         if(regexName.test(prenom.value) === false) {
