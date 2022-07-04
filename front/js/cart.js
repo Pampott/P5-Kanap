@@ -162,7 +162,7 @@ function firstNameCheck(){
 
 //Vérification du nom
 function lastNameCheck(){
-    const regexName = /^.{2,}$/;
+    const regexName = /^[A-ZÇÉÈÊËÀÂÎÏÔÙÛ]{1}[a-zçéèêëàâîïôùû]+[-]?[a-zçéèêëàâîïôùû]/;
     const nErrorMessage = document.getElementById("lastNameErrorMsg");
     nom.addEventListener("change", ()=> {
         if(regexName.test(nom.value) === false) {
@@ -177,7 +177,7 @@ function lastNameCheck(){
 
 //Vérification de la ville
 function cityCheck() {
-    const regexName = /^.{2,}$/;
+    const regexName = /^[A-ZÇÉÈÊËÀÂÎÏÔÙÛ]{1}[a-zçéèêëàâîïôùû]+[-]?[a-zçéèêëàâîïôùû]/;
     const vErrorMessage = document.getElementById("cityErrorMsg");
     ville.addEventListener("change", ()=>{
         if(regexName.test(ville.value) === false) {
